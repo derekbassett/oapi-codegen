@@ -1024,9 +1024,7 @@ func RegisterHandlers(router EchoRouter, si ServerInterface) {
 	router.GET("/with_other_response", wrapper.GetOther)
 	router.GET("/with_trailing_slash/", wrapper.GetJsonWithTrailingSlash)
 
-}
-
-// Base64 encoded, gzipped, json marshaled Swagger object
+} // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
 	"H4sIAAAAAAAC/8yUz24TMRDGX2U1cFyyKdz2CAdUJAgikTiEqHK8k9jVrm1mJq1W0b47GicliahCkGjV",

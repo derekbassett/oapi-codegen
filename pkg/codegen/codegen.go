@@ -34,6 +34,7 @@ import (
 type Options struct {
 	GenerateChiServer  bool              // GenerateChiServer specifies whether to generate chi server boilerplate
 	GenerateEchoServer bool              // GenerateEchoServer specifies whether to generate echo server boilerplate
+	GenerateGinServer  bool              // GenerateGinServer specifies whether to generate gin server boilerplate
 	GenerateClient     bool              // GenerateClient specifies whether to generate client boilerplate
 	GenerateTypes      bool              // GenerateTypes specifies whether to generate type definitions
 	EmbedSpec          bool              // Whether to embed the swagger spec in the generated code
@@ -68,6 +69,7 @@ var (
 		{lookFor: "echo\\.", packageName: "github.com/labstack/echo/v4"},
 		{lookFor: "errors\\.", packageName: "github.com/pkg/errors"},
 		{lookFor: "fmt\\.", packageName: "fmt"},
+		{lookFor: "gin\\.", packageName: "github.com/gin-gonic/gin"},
 		{lookFor: "gzip\\.", packageName: "compress/gzip"},
 		{lookFor: "http\\.", packageName: "net/http"},
 		{lookFor: "io\\.", packageName: "io"},
@@ -124,6 +126,14 @@ func Generate(swagger *openapi3.Swagger, packageName string, opts Options) (stri
 		typeDefinitions, err = GenerateTypeDefinitions(t, swagger, ops)
 		if err != nil {
 			return "", errors.Wrap(err, "error generating type definitions")
+		}
+	}
+
+	var serverOut string
+	if opts.GenerateGinServer {
+		serverOut, err = GenerateGinServer(t, ops)
+		if err != nil {
+			return "", errors.Wrap(err, "error generate Go handlers for Paths")
 		}
 	}
 
@@ -210,6 +220,13 @@ func Generate(swagger *openapi3.Swagger, packageName string, opts Options) (stri
 		_, err = w.WriteString(clientWithResponsesOut)
 		if err != nil {
 			return "", errors.Wrap(err, "error writing client")
+		}
+	}
+
+	if opts.GenerateGinServer {
+		_, err = w.WriteString(serverOut)
+		if err != nil {
+			return "", errors.Wrap(err, "error writing server")
 		}
 	}
 

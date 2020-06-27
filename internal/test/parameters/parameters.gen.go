@@ -3117,9 +3117,7 @@ func RegisterHandlers(router EchoRouter, si ServerInterface) {
 	router.GET("/simpleNoExplodeObject/:param", wrapper.GetSimpleNoExplodeObject)
 	router.GET("/simplePrimitive/:param", wrapper.GetSimplePrimitive)
 
-}
-
-// Base64 encoded, gzipped, json marshaled Swagger object
+} // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
 	"H4sIAAAAAAAC/9xZS2/jNhD+K8a0p0JreXdvugXbV4Duo3UOBRY5MNI45lYSuSQdJDD03wuSelIPS7aV",

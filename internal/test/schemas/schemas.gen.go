@@ -1045,9 +1045,7 @@ func RegisterHandlers(router EchoRouter, si ServerInterface) {
 	router.GET("/issues/41/:1param", wrapper.Issue41)
 	router.GET("/issues/9", wrapper.Issue9)
 
-}
-
-// Base64 encoded, gzipped, json marshaled Swagger object
+} // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
 	"H4sIAAAAAAAC/7RW32/bNhD+Vw7cgL04lp00WKu3riiGPKwNmgB7aPJAi2eLjXRkyWMSwdD/PpCyIqWW",

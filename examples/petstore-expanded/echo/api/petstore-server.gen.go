@@ -129,9 +129,7 @@ func RegisterHandlers(router EchoRouter, si ServerInterface) {
 	router.DELETE("/pets/:id", wrapper.DeletePet)
 	router.GET("/pets/:id", wrapper.FindPetById)
 
-}
-
-// Base64 encoded, gzipped, json marshaled Swagger object
+} // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
 	"H4sIAAAAAAAC/+RXW48budH9KwV+32OnNbEXedBTvB4vICBrT+LdvKznoYYsSbXgpYcsaiwM9N+DYrdu",

@@ -650,27 +650,34 @@ func GenerateTypesForOperations(t *template.Template, ops []OperationDefinition)
 	return buf.String(), nil
 }
 
+// GenerateGinServer This function generates all the go code as well as all the wrapper functions around our handlers.
+//
+func GenerateGinServer(t *template.Template, operations []OperationDefinition) (string, error) {
+	var buf bytes.Buffer
+	w := bufio.NewWriter(&buf)
+
+	err := t.ExecuteTemplate(w, "gin-server.tmpl", operations)
+	if err != nil {
+		return "", errors.Wrap(err, "error generating server")
+	}
+	err = w.Flush()
+	if err != nil {
+		return "", errors.Wrap(err, "error flushing output buffer for server")
+	}
+
+	return buf.String(), nil
+}
+
 // GenerateChiServer This function generates all the go code for the ServerInterface as well as
 // all the wrapper functions around our handlers.
 func GenerateChiServer(t *template.Template, operations []OperationDefinition) (string, error) {
 	var buf bytes.Buffer
 	w := bufio.NewWriter(&buf)
 
-	err := t.ExecuteTemplate(w, "chi-interface.tmpl", operations)
+	err := t.ExecuteTemplate(w, "chi-server.tmpl", operations)
 	if err != nil {
-		return "", errors.Wrap(err, "error generating server interface")
+		return "", errors.Wrap(err, "error generating server")
 	}
-
-	err = t.ExecuteTemplate(w, "chi-middleware.tmpl", operations)
-	if err != nil {
-		return "", errors.Wrap(err, "error generating server middleware")
-	}
-
-	err = t.ExecuteTemplate(w, "chi-handler.tmpl", operations)
-	if err != nil {
-		return "", errors.Wrap(err, "error generating server http handler")
-	}
-
 	err = w.Flush()
 	if err != nil {
 		return "", errors.Wrap(err, "error flushing output buffer for server")
@@ -682,73 +689,16 @@ func GenerateChiServer(t *template.Template, operations []OperationDefinition) (
 // GenerateEchoServer This function generates all the go code for the ServerInterface as well as
 // all the wrapper functions around our handlers.
 func GenerateEchoServer(t *template.Template, operations []OperationDefinition) (string, error) {
-	si, err := GenerateServerInterface(t, operations)
-	if err != nil {
-		return "", fmt.Errorf("Error generating server types and interface: %s", err)
-	}
-
-	wrappers, err := GenerateWrappers(t, operations)
-	if err != nil {
-		return "", fmt.Errorf("Error generating handler wrappers: %s", err)
-	}
-
-	register, err := GenerateRegistration(t, operations)
-	if err != nil {
-		return "", fmt.Errorf("Error generating handler registration: %s", err)
-	}
-	return strings.Join([]string{si, wrappers, register}, "\n"), nil
-}
-
-// Uses the template engine to generate the server interface
-func GenerateServerInterface(t *template.Template, ops []OperationDefinition) (string, error) {
 	var buf bytes.Buffer
 	w := bufio.NewWriter(&buf)
 
-	err := t.ExecuteTemplate(w, "server-interface.tmpl", ops)
-
+	err := t.ExecuteTemplate(w, "echo-server.tmpl", operations)
 	if err != nil {
-		return "", fmt.Errorf("error generating server interface: %s", err)
+		return "", fmt.Errorf("error generating server: %s", err)
 	}
 	err = w.Flush()
 	if err != nil {
 		return "", fmt.Errorf("error flushing output buffer for server interface: %s", err)
-	}
-	return buf.String(), nil
-}
-
-// Uses the template engine to generate all the wrappers which wrap our simple
-// interface functions and perform marshallin/unmarshalling from HTTP
-// request objects.
-func GenerateWrappers(t *template.Template, ops []OperationDefinition) (string, error) {
-	var buf bytes.Buffer
-	w := bufio.NewWriter(&buf)
-
-	err := t.ExecuteTemplate(w, "wrappers.tmpl", ops)
-
-	if err != nil {
-		return "", fmt.Errorf("error generating server interface: %s", err)
-	}
-	err = w.Flush()
-	if err != nil {
-		return "", fmt.Errorf("error flushing output buffer for server interface: %s", err)
-	}
-	return buf.String(), nil
-}
-
-// Uses the template engine to generate the function which registers our wrappers
-// as Echo path handlers.
-func GenerateRegistration(t *template.Template, ops []OperationDefinition) (string, error) {
-	var buf bytes.Buffer
-	w := bufio.NewWriter(&buf)
-
-	err := t.ExecuteTemplate(w, "register.tmpl", ops)
-
-	if err != nil {
-		return "", fmt.Errorf("error generating route registration: %s", err)
-	}
-	err = w.Flush()
-	if err != nil {
-		return "", fmt.Errorf("error flushing output buffer for route registration: %s", err)
 	}
 	return buf.String(), nil
 }

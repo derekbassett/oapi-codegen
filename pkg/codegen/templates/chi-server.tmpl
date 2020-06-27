@@ -1,3 +1,9 @@
+type ServerInterface interface {
+{{range .}}// {{.Summary | stripNewLines }} ({{.Method}} {{.Path}})
+{{.OperationId}}(w http.ResponseWriter, r *http.Request)
+{{end}}
+}
+
 
 {{range .}}{{$opid := .OperationId}}
 
@@ -171,5 +177,17 @@ func {{$opid}}Ctx(next http.Handler) http.Handler {
 }
 {{end}}
 
+// Handler creates http.Handler with routing matching OpenAPI spec.
+func Handler(si ServerInterface) http.Handler {
+  return HandlerFromMux(si, chi.NewRouter())
+}
 
-
+// HandlerFromMux creates http.Handler with routing matching OpenAPI spec based on the provided mux.
+func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
+{{range .}}r.Group(func(r chi.Router) {
+  r.Use({{.OperationId}}Ctx)
+  r.{{.Method | lower | title }}("{{.Path | swaggerUriToChiUri}}", si.{{.OperationId}})
+})
+{{end}}
+  return r
+}
