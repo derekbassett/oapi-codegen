@@ -6,20 +6,8 @@ type Service interface {
 
 {{range .}}{{$opid := .OperationId}}
 
-{{if .RequiresParamObject}}
-// ParamsFor{{.OperationId}} operation parameters from context
-func ParamsFor{{.OperationId}}(ctx context.Context) *{{.OperationId}}Params {
-  return ctx.Value("{{.OperationId}}Params").(*{{.OperationId}}Params)
-}
-{{end}}
-
-// {{$opid}} operation middleware
-func {{$opid}}Ctx(next http.Handler) http.Handler {
-  return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-    ctx := r.Context()
-    {{if or .RequiresParamObject (gt (len .PathParams) 0) }}
-    var err error
-    {{end}}
+// {{$opid}}
+func {{$opid}}(c *gin.Context) {
 
     {{range .PathParams}}// ------------- Path parameter "{{.ParamName}}" -------------
     var {{$varName := .GoVariableName}}{{$varName}} {{.TypeDef}}
@@ -171,12 +159,10 @@ func {{$opid}}Ctx(next http.Handler) http.Handler {
 
       ctx = context.WithValue(ctx, "{{.OperationId}}Params", &params)
     {{end}}
-    next.ServeHTTP(w, r.WithContext(ctx))
-  })
 }
 {{end}}
 
-// HandlerFromMux creates http.Handler with routing matching OpenAPI spec based on the provided mux.
+// RegisterHandler creates http.Handler with routing matching OpenAPI spec based on the provided mux.
 func RegisterHandler(si Service, r gin.IRouter) http.Handler {
 {{range .}}r.Group(func(r gin.IRouter) {
   r.{{.Method | lower | title }}("{{.Path | swaggerUriToChiUri}}", si.{{.OperationId}})

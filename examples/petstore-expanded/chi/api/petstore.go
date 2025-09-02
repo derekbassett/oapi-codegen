@@ -86,6 +86,7 @@ func (p *PetStore) AddPet(w http.ResponseWriter, r *http.Request) {
 	var pet Pet
 	pet.Name = newPet.Name
 	pet.Tag = newPet.Tag
+	pet.Bread = newPet.Breed
 	pet.Id = p.NextId
 	p.NextId = p.NextId + 1
 

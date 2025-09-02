@@ -149,7 +149,9 @@ components:
         tag:
           type: string
           description: Type of the pet
-
+        breed:
+          type: string
+          description: Breed of pet
     Error:
       required:
         - code
